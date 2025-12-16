@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: reserva-salas
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn reserva_salas_ppgdse.wsgi:application"
