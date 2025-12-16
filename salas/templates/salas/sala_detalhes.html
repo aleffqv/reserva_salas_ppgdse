@@ -1,0 +1,38 @@
+{% for d, dia in reservas_por_dia.items %}
+  <div class="mb-4">
+    <strong>{{ dia.nome }}</strong>
+    <hr class="my-2">
+
+    {% for h, info in dia.horarios.items %}
+      <div class="d-flex justify-content-between align-items-center small py-1">
+        <span>{{ info.nome }}</span>
+
+        {% if info.reserva %}
+          <span class="text-danger">Reservado</span>
+
+          {% if user == info.reserva.usuario %}
+            <div>
+              <a href="{% url 'editar_reserva' info.reserva.id %}"
+                 class="btn btn-sm btn-light">
+                <i class="bi bi-pencil"></i>
+              </a>
+              <a href="{% url 'excluir_reserva' info.reserva.id %}"
+                 class="btn btn-sm btn-danger">
+                <i class="bi bi-trash"></i>
+              </a>
+            </div>
+          {% endif %}
+        {% else %}
+          <span class="text-success">Livre</span>
+
+          {% if user.is_authenticated %}
+            <a href="{% url 'criar_reserva' %}?sala={{ sala.id }}&dia={{ d }}&horario={{ h }}"
+               class="btn btn-sm btn-success">
+              Reservar
+            </a>
+          {% endif %}
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+{% endfor %}

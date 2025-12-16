@@ -1,0 +1,45 @@
+body {
+  background: #f5f6f8;
+}
+
+.card-soft {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.sala-chip {
+  border: none;
+  color: #fff;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform .15s ease, opacity .15s ease;
+}
+
+.sala-chip:hover {
+  transform: translateY(-1px);
+  opacity: .9;
+}
+
+.reserva-card {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: .5rem;
+  margin-bottom: .25rem;
+}
+
+.slot-livre {
+  color: #28a745;
+  font-size: .85rem;
+}
+
+.calendario-table th,
+.calendario-table td {
+  vertical-align: middle;
+}
+
+.modal-content {
+  border-radius: 14px;
+}

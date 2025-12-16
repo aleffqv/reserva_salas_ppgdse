@@ -1,0 +1,17 @@
+{% for d, dia in reservas_por_dia.items %}
+  <div class="mb-4">
+    <strong>{{ dia.nome }}</strong>
+    <hr class="my-2">
+
+    {% for h, info in dia.horarios.items %}
+      <div class="d-flex justify-content-between small py-1">
+        <span>{{ info.nome }}</span>
+        {% if info.reserva %}
+          <span class="text-danger">Reservado</span>
+        {% else %}
+          <span class="text-success">Livre</span>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+{% endfor %}

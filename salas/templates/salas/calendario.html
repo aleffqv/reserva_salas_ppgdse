@@ -1,0 +1,107 @@
+{% extends 'salas/base.html' %}
+{% load sala_filters %}
+
+{% block title %}Calendário{% endblock %}
+
+{% block content %}
+
+<div class="card-soft p-4 mb-4">
+  <h4 class="mb-3">
+    <i class="bi bi-calendar-week"></i> Calendário de Reservas
+  </h4>
+
+  <!-- Chips das salas (bonito como antes) -->
+  <div class="d-flex flex-wrap gap-2">
+    {% for sala in salas %}
+      <button class="sala-chip"
+              style="background-color: {{ sala.cor }};"
+              data-sala-url="{% url 'sala_detalhes' sala.id %}"
+              data-sala-nome="Sala {{ sala.numero }}">
+        Sala {{ sala.numero }}
+      </button>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="card-soft p-3">
+  <div class="table-responsive">
+    <table class="table calendario-table align-middle">
+      <thead>
+        <tr>
+          <th>Horário</th>
+          {% for d, nome in dias_semana %}
+            <th>{{ nome }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for h, h_nome in horarios %}
+          <tr>
+            <td><strong>{{ h_nome }}</strong></td>
+
+            {% for d, _ in dias_semana %}
+              <td>
+                {% for r in calendario|get_item:d|get_item:h %}
+                  <div class="reserva-card">
+                    <strong>Sala {{ r.sala.numero }}</strong><br>
+                    <small>{{ r.usuario.first_name }}</small>
+
+                    {% if user == r.usuario %}
+                      <div class="mt-1">
+                        <a href="{% url 'editar_reserva' r.id %}"
+                           class="btn btn-sm btn-light">
+                          <i class="bi bi-pencil"></i>
+                        </a>
+                        <a href="{% url 'excluir_reserva' r.id %}"
+                           class="btn btn-sm btn-danger">
+                          <i class="bi bi-trash"></i>
+                        </a>
+                      </div>
+                    {% endif %}
+                  </div>
+                {% empty %}
+                  <span class="slot-livre">Livre</span>
+                {% endfor %}
+              </td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal bonito -->
+<div class="modal fade" id="salaModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 id="salaModalTitle"></h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="salaModalBody">
+        <div class="text-center py-5">
+          <div class="spinner-border"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('[data-sala-url]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    fetch(btn.dataset.salaUrl)
+      .then(r => r.text())
+      .then(html => {
+        document.getElementById('salaModalTitle').innerText = btn.dataset.salaNome;
+        document.getElementById('salaModalBody').innerHTML = html;
+        new bootstrap.Modal(document.getElementById('salaModal')).show();
+      });
+  });
+});
+</script>
+{% endblock %}

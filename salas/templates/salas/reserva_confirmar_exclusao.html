@@ -1,0 +1,42 @@
+{% extends 'salas/base.html' %}
+
+{% block title %}Confirmar Exclusão - PPGDSE{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-exclamation-triangle"></i> Confirmar Exclusão
+                </h4>
+            </div>
+            <div class="card-body">
+                <p class="lead">Tem certeza que deseja excluir esta reserva?</p>
+                
+                <div class="alert alert-warning">
+                    <strong>Detalhes da Reserva:</strong><br>
+                    <i class="bi bi-door-open"></i> <strong>Sala:</strong> {{ reserva.sala }}<br>
+                    <i class="bi bi-calendar3"></i> <strong>Dia:</strong> {{ reserva.get_dia_semana_display }}<br>
+                    <i class="bi bi-clock"></i> <strong>Horário:</strong> {{ reserva.get_horario_display }}<br>
+                    {% if reserva.observacoes %}
+                        <i class="bi bi-chat-left-text"></i> <strong>Observações:</strong> {{ reserva.observacoes }}<br>
+                    {% endif %}
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'calendario' %}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Confirmar Exclusão
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
