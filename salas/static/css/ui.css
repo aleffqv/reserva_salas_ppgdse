@@ -43,3 +43,59 @@ body {
 .modal-content {
   border-radius: 14px;
 }
+
+.calendario-table {
+  border-collapse: separate;
+  border-spacing: 6px;
+}
+
+.calendario-table th {
+  text-align: center;
+  font-weight: 600;
+  color: #555;
+}
+
+.calendar-cell {
+  padding: 0 !important;
+}
+
+.calendar-slot {
+  height: 90px;
+  border-radius: 12px;
+  padding: 8px;
+  font-size: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+
+.calendar-slot:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+}
+
+/* Slot livre */
+.calendar-slot.livre {
+  background: #f1f3f5;
+  color: #999;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+}
+
+/* Slot reservado */
+.calendar-slot.reservado {
+  color: #fff;
+}
+
+/* Texto interno */
+.calendar-slot small {
+  opacity: .9;
+}
+
+/* Botões */
+.calendar-slot .btn {
+  padding: 2px 6px;
+  font-size: 0.7rem;
+}
