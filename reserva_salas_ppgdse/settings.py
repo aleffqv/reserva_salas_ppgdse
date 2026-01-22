@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'salas',
+    'salas.apps.SalasConfig',
 ]
 
 MIDDLEWARE = [
@@ -147,14 +147,3 @@ STATICFILES_DIRS = []
 STATIC_URL = '/static/'
 
 
-if os.environ.get("CREATE_SUPERUSER") == "1":
-    User = get_user_model()
-
-    username = os.environ.get("DJANGO_SUPERUSER_USERNAME")
-    email = os.environ.get("DJANGO_SUPERUSER_EMAIL")
-    password = os.environ.get("DJANGO_SUPERUSER_PASSWORD")
-
-    if username and password and not User.objects.filter(username=username).exists():
-        User.objects.create_superuser(username, email, password)
-
-        
