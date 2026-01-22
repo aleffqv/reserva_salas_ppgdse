@@ -1,51 +1,135 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <title>{% block title %}Reserva de Salas{% endblock %}</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+{% extends 'salas/base.html' %}
+{% load sala_filters %}
 
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-  <link href="{% static 'css/ui.css' %}" rel="stylesheet">
-</head>
+{% block title %}Calendário | Reserva de Salas PPGDSE{% endblock %}
 
-<body>
+{% block content %}
 
-<nav class="navbar navbar-light bg-white border-bottom">
-  <div class="container d-flex justify-content-between align-items-center">
-    <a class="navbar-brand fw-semibold" href="/">
-      <i class="bi bi-calendar-week"></i> Reserva de Salas
-    </a>
+<div class="card-soft p-4 mb-4">
+  <h4 class="mb-3">
+    <i class="bi bi-calendar-week"></i> Calendário de Reservas
+  </h4>
 
-    <div class="d-flex align-items-center gap-2">
-      {% if user.is_authenticated %}
-        <a href="{% url 'criar_reserva' %}" class="btn btn-success btn-sm">
-          <i class="bi bi-plus-circle"></i> Nova reserva
-        </a>
+  <!-- Chips das salas -->
+  <div class="d-flex flex-wrap gap-2 mb-3">
+    {% for sala in salas %}
+      <button
+        class="sala-chip"
+        style="background-color: {{ sala.cor }};"
+        data-sala-url="{% url 'sala_detalhes' sala.id %}"
+        data-sala-nome="Sala {{ sala.numero }}">
+        Sala {{ sala.numero }}
+      </button>
+    {% endfor %}
+  </div>
 
-        <a href="{% url 'minhas_reservas' %}" class="btn btn-outline-primary btn-sm">
-          Minhas reservas
-        </a>
+  <!-- Texto explicativo -->
+  <div class="text-muted small">
+    <p class="mb-1">
+      Este sistema permite o gerenciamento e a visualização das reservas de salas do <strong>PPGDSE</strong>.
+    </p>
+    <p class="mb-1">
+      Para realizar uma reserva, clique em <strong>“Nova reserva”</strong>. Apenas usuários autorizados
+      podem cadastrar reservas, selecionando o dia, horário e a sala desejada.
+    </p>
+    <p class="mb-0">
+      <strong>Observações:</strong><br>
+      • Não é permitido reservar a mesma sala no mesmo horário.<br>
+      • Cada horário comporta até três salas diferentes.<br>
+      • Apenas o usuário que criou a reserva pode editá-la ou excluí-la.
+    </p>
+  </div>
+</div>
 
-        <span class="text-muted ms-2">{{ user.first_name }}</span>
+<div class="card-soft p-3">
+  <div class="table-responsive">
+    <table class="table calendario-table">
+      <thead>
+        <tr>
+          <th>Horário</th>
+          {% for d, nome in dias_semana %}
+            <th class="text-center">{{ nome }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
 
-        <a href="{% url 'logout' %}" class="btn btn-outline-secondary btn-sm">
-          Sair
-        </a>
-      {% else %}
-        <a href="{% url 'login' %}" class="btn btn-primary btn-sm">Entrar</a>
-      {% endif %}
+      <tbody>
+        {% for h, h_nome in horarios %}
+          <tr>
+            <td><strong>{{ h_nome }}</strong></td>
+
+            {% for d, _ in dias_semana %}
+              <td class="calendar-cell">
+                <div class="calendar-slots">
+
+                  {% for r in calendario|get_item:d|get_item:h %}
+                    <div
+                      class="calendar-slot reservado"
+                      style="background-color: {{ r.sala.cor }};">
+
+                      <div>
+                        <strong>Sala {{ r.sala.numero }}</strong><br>
+                        <small>{{ r.usuario.first_name }}</small>
+                      </div>
+
+                      {% if user == r.usuario %}
+                        <div class="d-flex gap-1">
+                          <a href="{% url 'editar_reserva' r.id %}" class="btn btn-light btn-sm">
+                            <i class="bi bi-pencil"></i>
+                          </a>
+                          <a href="{% url 'excluir_reserva' r.id %}" class="btn btn-danger btn-sm">
+                            <i class="bi bi-trash"></i>
+                          </a>
+                        </div>
+                      {% endif %}
+                    </div>
+                  {% empty %}
+                    <div class="calendar-slot livre">
+                      Livre
+                    </div>
+                  {% endfor %}
+
+                </div>
+              </td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="salaModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 id="salaModalTitle"></h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="salaModalBody">
+        <div class="text-center py-5">
+          <div class="spinner-border"></div>
+        </div>
+      </div>
     </div>
   </div>
-</nav>
+</div>
 
-<main class="container py-4">
-  {% block content %}{% endblock %}
-</main>
+{% endblock %}
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-{% block extra_js %}{% endblock %}
-</body>
-</html>
+{% block extra_js %}
+<script>
+document.querySelectorAll('[data-sala-url]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    fetch(btn.dataset.salaUrl)
+      .then(r => r.text())
+      .then(html => {
+        document.getElementById('salaModalTitle').innerText = btn.dataset.salaNome;
+        document.getElementById('salaModalBody').innerHTML = html;
+        new bootstrap.Modal(document.getElementById('salaModal')).show();
+      });
+  });
+});
+</script>
+{% endblock %}
