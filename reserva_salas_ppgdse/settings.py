@@ -1,5 +1,6 @@
 import os
 import dj_database_url
+from django.contrib.auth import get_user_model
 """
 Django settings for reserva_salas_ppgdse project.
 
@@ -144,3 +145,16 @@ LOGOUT_REDIRECT_URL = 'calendario'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = []
 STATIC_URL = '/static/'
+
+
+if os.environ.get("CREATE_SUPERUSER") == "1":
+    User = get_user_model()
+
+    username = os.environ.get("DJANGO_SUPERUSER_USERNAME")
+    email = os.environ.get("DJANGO_SUPERUSER_EMAIL")
+    password = os.environ.get("DJANGO_SUPERUSER_PASSWORD")
+
+    if username and password and not User.objects.filter(username=username).exists():
+        User.objects.create_superuser(username, email, password)
+
+        
