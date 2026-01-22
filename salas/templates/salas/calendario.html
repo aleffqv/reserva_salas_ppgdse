@@ -1,7 +1,7 @@
 {% extends 'salas/base.html' %}
 {% load sala_filters %}
 
-{% block title %}Calendário{% endblock %}
+{% block title %}Calendário | Reserva de Salas PPGDSE{% endblock %}
 
 {% block content %}
 
@@ -10,7 +10,8 @@
     <i class="bi bi-calendar-week"></i> Calendário de Reservas
   </h4>
 
-  <div class="d-flex flex-wrap gap-2">
+  <!-- Chips das salas -->
+  <div class="d-flex flex-wrap gap-2 mb-3">
     {% for sala in salas %}
       <button
         class="sala-chip"
@@ -20,6 +21,23 @@
         Sala {{ sala.numero }}
       </button>
     {% endfor %}
+  </div>
+
+  <!-- Texto explicativo -->
+  <div class="text-muted small">
+    <p class="mb-1">
+      Este sistema permite o gerenciamento e a visualização das reservas de salas do <strong>PPGDSE</strong>.
+    </p>
+    <p class="mb-1">
+      Para realizar uma reserva, clique em <strong>“Nova reserva”</strong>. Apenas usuários autorizados
+      podem cadastrar reservas, selecionando o dia, horário e a sala desejada.
+    </p>
+    <p class="mb-0">
+      <strong>Observações:</strong><br>
+      • Não é permitido reservar a mesma sala no mesmo horário.<br>
+      • Cada horário comporta até três salas diferentes.<br>
+      • Apenas o usuário que criou a reserva pode editá-la ou excluí-la.
+    </p>
   </div>
 </div>
 
