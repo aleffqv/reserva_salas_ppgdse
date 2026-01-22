@@ -25,12 +25,12 @@
 
 <div class="card-soft p-3">
   <div class="table-responsive">
-    <table class="table calendario-table align-middle">
+    <table class="table calendario-table">
       <thead>
         <tr>
           <th>Horário</th>
           {% for d, nome in dias_semana %}
-            <th>{{ nome }}</th>
+            <th class="text-center">{{ nome }}</th>
           {% endfor %}
         </tr>
       </thead>
@@ -48,9 +48,9 @@
                     <div
                       class="calendar-slot reservado"
                       style="background-color: {{ r.sala.cor }};">
-                      
+
                       <div>
-                        <strong>Sala {{ r.sala.numero }}</strong>
+                        <strong>Sala {{ r.sala.numero }}</strong><br>
                         <small>{{ r.usuario.first_name }}</small>
                       </div>
 
