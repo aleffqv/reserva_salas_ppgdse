@@ -10,13 +10,15 @@
     <i class="bi bi-calendar-week"></i> Calendário de Reservas
   </h4>
 
-  <!-- Chips das salas (bonito como antes) -->
   <div class="d-flex flex-wrap gap-2">
     {% for sala in salas %}
-    <button class="sala-chip" style="background-color: {{ sala.cor }};"
-      data-sala-url="{% url 'sala_detalhes' sala.id %}" data-sala-nome="Sala {{ sala.numero }}">
-      Sala {{ sala.numero }}
-    </button>
+      <button
+        class="sala-chip"
+        style="background-color: {{ sala.cor }};"
+        data-sala-url="{% url 'sala_detalhes' sala.id %}"
+        data-sala-nome="Sala {{ sala.numero }}">
+        Sala {{ sala.numero }}
+      </button>
     {% endfor %}
   </div>
 </div>
@@ -28,48 +30,58 @@
         <tr>
           <th>Horário</th>
           {% for d, nome in dias_semana %}
-          <th>{{ nome }}</th>
+            <th>{{ nome }}</th>
           {% endfor %}
         </tr>
       </thead>
+
       <tbody>
         {% for h, h_nome in horarios %}
-        <tr>
-          <td><strong>{{ h_nome }}</strong></td>
+          <tr>
+            <td><strong>{{ h_nome }}</strong></td>
 
-          {% for d, _ in dias_semana %}
-          <td class="calendar-cell">
-            {% for r in calendario|get_item:d|get_item:h %}
-            <div class="calendar-slot reservado" style="background-color: {{ r.sala.cor }};">
-              <strong>Sala {{ r.sala.numero }}</strong>
-              <small>{{ r.usuario.first_name }}</small>
+            {% for d, _ in dias_semana %}
+              <td class="calendar-cell">
+                <div class="calendar-slots">
 
-              {% if user == r.usuario %}
-              <div class="d-flex gap-1">
-                <a href="{% url 'editar_reserva' r.id %}" class="btn btn-light btn-sm">
-                  <i class="bi bi-pencil"></i>
-                </a>
-                <a href="{% url 'excluir_reserva' r.id %}" class="btn btn-danger btn-sm">
-                  <i class="bi bi-trash"></i>
-                </a>
-              </div>
-              {% endif %}
-            </div>
-            {% empty %}
-            <div class="calendar-slot livre">
-              Livre
-            </div>
+                  {% for r in calendario|get_item:d|get_item:h %}
+                    <div
+                      class="calendar-slot reservado"
+                      style="background-color: {{ r.sala.cor }};">
+                      
+                      <div>
+                        <strong>Sala {{ r.sala.numero }}</strong>
+                        <small>{{ r.usuario.first_name }}</small>
+                      </div>
+
+                      {% if user == r.usuario %}
+                        <div class="d-flex gap-1">
+                          <a href="{% url 'editar_reserva' r.id %}" class="btn btn-light btn-sm">
+                            <i class="bi bi-pencil"></i>
+                          </a>
+                          <a href="{% url 'excluir_reserva' r.id %}" class="btn btn-danger btn-sm">
+                            <i class="bi bi-trash"></i>
+                          </a>
+                        </div>
+                      {% endif %}
+                    </div>
+                  {% empty %}
+                    <div class="calendar-slot livre">
+                      Livre
+                    </div>
+                  {% endfor %}
+
+                </div>
+              </td>
             {% endfor %}
-          </td>
-          {% endfor %}
-        </tr>
+          </tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
 </div>
 
-<!-- Modal bonito -->
+<!-- Modal -->
 <div class="modal fade" id="salaModal" tabindex="-1">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
@@ -90,16 +102,16 @@
 
 {% block extra_js %}
 <script>
-  document.querySelectorAll('[data-sala-url]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      fetch(btn.dataset.salaUrl)
-        .then(r => r.text())
-        .then(html => {
-          document.getElementById('salaModalTitle').innerText = btn.dataset.salaNome;
-          document.getElementById('salaModalBody').innerHTML = html;
-          new bootstrap.Modal(document.getElementById('salaModal')).show();
-        });
-    });
+document.querySelectorAll('[data-sala-url]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    fetch(btn.dataset.salaUrl)
+      .then(r => r.text())
+      .then(html => {
+        document.getElementById('salaModalTitle').innerText = btn.dataset.salaNome;
+        document.getElementById('salaModalBody').innerHTML = html;
+        new bootstrap.Modal(document.getElementById('salaModal')).show();
+      });
   });
+});
 </script>
 {% endblock %}
